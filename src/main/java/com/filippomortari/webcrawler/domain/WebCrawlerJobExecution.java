@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.net.URI;
 import java.time.Instant;
@@ -13,8 +15,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@RedisHash("webcrawlerjobs")
 public class WebCrawlerJobExecution {
 
+    @Id
     private UUID id;
     private Instant submittedOn;
 
@@ -22,5 +26,5 @@ public class WebCrawlerJobExecution {
 
     private Integer maxDepthOfCrawling;
     private Integer maxPagesToFetch;
-    private Integer politenessDelayMillis;
+    private Long politenessDelayMillis;
 }

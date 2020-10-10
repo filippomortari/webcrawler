@@ -4,15 +4,18 @@ import com.filippomortari.webcrawler.domain.WebCrawlerJobExecution;
 import com.filippomortari.webcrawler.domain.WebCrawlerJobRequest;
 import com.filippomortari.webcrawler.service.WebCrawlerService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
+import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("crawler")
 public class WebCrawlerController {
@@ -23,17 +26,24 @@ public class WebCrawlerController {
         this.webCrawlerService = webCrawlerService;
     }
 
-    @PostMapping(path = "jobs")
-    public ResponseEntity<WebCrawlerJobExecution> submitNewJob(@Valid WebCrawlerJobRequest webCrawlerJobRequest) {
+    @PostMapping(path = "jobs", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<WebCrawlerJobExecution> submitNewJob(@Valid @RequestBody WebCrawlerJobRequest webCrawlerJobRequest) {
         WebCrawlerJobExecution webCrawlerJobExecution = webCrawlerService.submitNewJob(webCrawlerJobRequest);
 
-        URI jobExecutionLocation = UriComponentsBuilder
-                .fromPath("jobs")
+        final URI jobExecutionLocation = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .pathSegment("crawler")
+                .pathSegment("jobs")
                 .pathSegment("{jobExecutionId}")
                 .build(webCrawlerJobExecution.getId());
 
         return ResponseEntity.created(jobExecutionLocation).build();
+    }
 
+    @GetMapping(path = "jobs/{jobExecutionId}", produces = "application/json")
+    public ResponseEntity<WebCrawlerJobExecution> getJobDefinition(@PathVariable @Valid UUID jobExecutionId) {
+        Optional<WebCrawlerJobExecution> webCrawlerJobExecution = webCrawlerService.getJobExecution(jobExecutionId);
+        return ResponseEntity.of(webCrawlerJobExecution);
     }
 
 }
