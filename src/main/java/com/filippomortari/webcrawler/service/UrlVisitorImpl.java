@@ -1,17 +1,21 @@
 package com.filippomortari.webcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Service
 public class UrlVisitorImpl implements UrlVisitor {
     @Override
     public Set<URI> visitUrlAndGetHyperLinks(URI uri) {
@@ -30,7 +34,9 @@ public class UrlVisitorImpl implements UrlVisitor {
                 .stream()
                 .map(e -> e.attr("abs:href"))
                 .map(this::trimQueryString)
-                .map(url -> UriComponentsBuilder.fromHttpUrl(url).build().toUri())
+                .filter(StringUtils::isNotBlank)
+                .map(this::toURI)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
@@ -41,5 +47,13 @@ public class UrlVisitorImpl implements UrlVisitor {
                 return r.substring(0, r.length() - 1);
             }
             return r;
+    }
+
+    public URI toURI(String url) {
+        try {
+            return UriComponentsBuilder.fromHttpUrl(url).build().toUri();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

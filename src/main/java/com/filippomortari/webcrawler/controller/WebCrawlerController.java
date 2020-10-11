@@ -1,5 +1,6 @@
 package com.filippomortari.webcrawler.controller;
 
+import com.filippomortari.webcrawler.controller.dto.WebCrawlerVisitedUrlDTO;
 import com.filippomortari.webcrawler.domain.WebCrawlerJobExecution;
 import com.filippomortari.webcrawler.domain.WebCrawlerJobRequest;
 import com.filippomortari.webcrawler.service.WebCrawlerService;
@@ -10,8 +11,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -42,6 +45,16 @@ public class WebCrawlerController {
     public ResponseEntity<WebCrawlerJobExecution> getJobDefinition(@PathVariable @Valid UUID jobExecutionId) {
         Optional<WebCrawlerJobExecution> webCrawlerJobExecution = webCrawlerService.getJobExecution(jobExecutionId);
         return ResponseEntity.of(webCrawlerJobExecution);
+    }
+
+    @GetMapping(path = "jobs/{jobExecutionId}/activity", produces = "application/json")
+    public ResponseEntity<List<WebCrawlerVisitedUrlDTO>> listActivity(@PathVariable @Valid UUID jobExecutionId) {
+        final List<WebCrawlerVisitedUrlDTO> results = webCrawlerService
+                .listActivity(jobExecutionId)
+                .parallelStream()
+                .map(WebCrawlerVisitedUrlDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(results);
     }
 
 }

@@ -39,7 +39,7 @@ public class WebCrawlerTaskWorkerImpl implements WebCrawlerTaskWorker {
     }
 
 
-    @RqueueListener(value = "${email.queue.name}")
+    @RqueueListener(value = "${webcrawler-tasks.queue.name}", concurrency = "10")
     public void consumeWebCrawlerTask(WebCrawlerTask webCrawlerTask) {
         log.debug("Received task {}", webCrawlerTask);
 
@@ -48,16 +48,19 @@ public class WebCrawlerTaskWorkerImpl implements WebCrawlerTaskWorker {
         final Optional<WebCrawlerJobExecution> webCrawlerJobExecutionOptional = webCrawlerJobExecutionRepository.findById(webCrawlerJobId);
 
         if (webCrawlerJobExecutionOptional.isPresent()) {
-            final URI urlToVisit = webCrawlerTask.getUrlToVisit();
-            final Set<URI> urisFound = urlVisitor.visitUrlAndGetHyperLinks(urlToVisit);
-
             final WebCrawlerJobExecution webCrawlerJobExecution = webCrawlerJobExecutionOptional.get();
+            final URI urlToVisit = webCrawlerTask.getUrlToVisit();
+            final Integer currentLevel = webCrawlerTask.getLevel();
 
+            if (!this.isUriEligibleForCrawling(urlToVisit, currentLevel, webCrawlerJobExecution)) {
+                log.debug("already processed this url in another thread, acking silently. {}", urlToVisit);
+                return;
+            }
+
+            final Set<URI> urisFound = urlVisitor.visitUrlAndGetHyperLinks(urlToVisit);
             final Set<URI> urisFoundFilteredByFrontierDomain = urisFound
                     .stream()
                     .filter(url -> url.toString().startsWith(webCrawlerJobExecution.getFrontier().toString())).collect(Collectors.toSet());
-
-            final Integer currentLevel = webCrawlerTask.getLevel();
 
             final WebCrawlerVisitedUrl webCrawlerVisitedUrl = WebCrawlerVisitedUrl
                     .builder()
@@ -69,8 +72,8 @@ public class WebCrawlerTaskWorkerImpl implements WebCrawlerTaskWorker {
                     .level(currentLevel)
                     .build();
 
-            log.debug("Visited: {}", webCrawlerVisitedUrl);
             webCrawlerVisitedUrlRepository.save(webCrawlerVisitedUrl);
+            log.info("Visited [level {}]: {}", currentLevel, webCrawlerVisitedUrl.getId());
 
             urisFoundFilteredByFrontierDomain
                     .stream()
@@ -97,7 +100,8 @@ public class WebCrawlerTaskWorkerImpl implements WebCrawlerTaskWorker {
     private boolean isUriEligibleForCrawling(URI uri, Integer currentLevel, WebCrawlerJobExecution webCrawlerJobExecution) {
         final Integer maxDepthOfCrawling = webCrawlerJobExecution.getMaxDepthOfCrawling();
         if (Objects.nonNull(maxDepthOfCrawling)) {
-            if (currentLevel >= maxDepthOfCrawling) {
+            if (currentLevel > maxDepthOfCrawling) {
+                log.info("reached depth [level {}], which is higher than maxDepthOfCrawling [{}], acking silently.", currentLevel, maxDepthOfCrawling);
                 return false;
             }
         }

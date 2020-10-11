@@ -3,13 +3,14 @@ package com.filippomortari.webcrawler.service;
 import com.filippomortari.webcrawler.domain.WebCrawlerJobExecution;
 import com.filippomortari.webcrawler.domain.WebCrawlerJobRequest;
 import com.filippomortari.webcrawler.domain.WebCrawlerTask;
+import com.filippomortari.webcrawler.domain.WebCrawlerVisitedUrl;
 import com.filippomortari.webcrawler.domain.repository.WebCrawlerJobExecutionRepository;
-import com.github.sonus21.rqueue.core.RqueueMessageSender;
-import org.springframework.beans.factory.annotation.Value;
+import com.filippomortari.webcrawler.domain.repository.WebCrawlerVisitedUrlRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,14 +19,16 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
 
     private final WebCrawlerJobExecutionRepository webCrawlerJobExecutionRepository;
     private final WebCrawlerTaskDispatcher webCrawlerTaskDispatcher;
+    private final WebCrawlerVisitedUrlRepository webCrawlerVisitedUrlRepository;
 
 
     public WebCrawlerServiceImpl(
             final WebCrawlerJobExecutionRepository webCrawlerJobExecutionRepository,
-            final WebCrawlerTaskDispatcher webCrawlerTaskDispatcher
-    ) {
+            final WebCrawlerTaskDispatcher webCrawlerTaskDispatcher,
+            WebCrawlerVisitedUrlRepository webCrawlerVisitedUrlRepository) {
         this.webCrawlerJobExecutionRepository = webCrawlerJobExecutionRepository;
         this.webCrawlerTaskDispatcher = webCrawlerTaskDispatcher;
+        this.webCrawlerVisitedUrlRepository = webCrawlerVisitedUrlRepository;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
                 .level(0)
                 .build();
 
-        webCrawlerTaskDispatcher.dispatch(webCrawlerTask, saved.getPolitenessDelayMillis());
+        webCrawlerTaskDispatcher.dispatch(webCrawlerTask, 0L);
 
         return saved;
     }
@@ -56,5 +59,10 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
     @Override
     public Optional<WebCrawlerJobExecution> getJobExecution(UUID webCrawlerJobExecutionId) {
         return webCrawlerJobExecutionRepository.findById(webCrawlerJobExecutionId);
+    }
+
+    @Override
+    public List<WebCrawlerVisitedUrl> listActivity(UUID webCrawlerJobExecutionId) {
+        return webCrawlerVisitedUrlRepository.findByWebCrawlerJobId(webCrawlerJobExecutionId);
     }
 }
