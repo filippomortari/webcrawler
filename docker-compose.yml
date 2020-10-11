@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    links:
+      - "db:redis"
+    environment:
+     - SPRING_REDIS_HOST=redis
+  db:
+    image: "redis"
+    hostname: redis
+    ports:
+      - "6379:6379"
