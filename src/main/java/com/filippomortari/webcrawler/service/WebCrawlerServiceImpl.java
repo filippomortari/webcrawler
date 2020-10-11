@@ -39,7 +39,6 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
                 .submittedOn(Instant.now())
                 .frontier(UriComponentsBuilder.fromHttpUrl(webCrawlerJobRequest.getFrontier()).build().toUri())
                 .maxDepthOfCrawling(webCrawlerJobRequest.getMaxDepthOfCrawling())
-                .maxPagesToFetch(webCrawlerJobRequest.getMaxPagesToFetch())
                 .politenessDelayMillis(webCrawlerJobRequest.getPolitenessDelayMillis())
                 .build();
 

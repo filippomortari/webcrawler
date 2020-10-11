@@ -14,6 +14,5 @@ public class WebCrawlerJobRequest {
     private String frontier;
 
     private Integer maxDepthOfCrawling;
-    private Integer maxPagesToFetch;
     private Long politenessDelayMillis;
 }
