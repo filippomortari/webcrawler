@@ -17,15 +17,15 @@ import java.util.UUID;
 public class WebCrawlerServiceImpl implements WebCrawlerService {
 
     private final WebCrawlerJobExecutionRepository webCrawlerJobExecutionRepository;
-    private final RqueueMessageSender rqueueMessageSender;
-    private final String webCrawlerTasksQueue;
+    private final WebCrawlerTaskDispatcher webCrawlerTaskDispatcher;
 
-    public WebCrawlerServiceImpl(final WebCrawlerJobExecutionRepository webCrawlerJobExecutionRepository,
-                                 final RqueueMessageSender rqueueMessageSender,
-                                 @Value("${webcrawler-tasks.queue.name}") final String webCrawlerTasksQueue) {
+
+    public WebCrawlerServiceImpl(
+            final WebCrawlerJobExecutionRepository webCrawlerJobExecutionRepository,
+            final WebCrawlerTaskDispatcher webCrawlerTaskDispatcher
+    ) {
         this.webCrawlerJobExecutionRepository = webCrawlerJobExecutionRepository;
-        this.rqueueMessageSender = rqueueMessageSender;
-        this.webCrawlerTasksQueue = webCrawlerTasksQueue;
+        this.webCrawlerTaskDispatcher = webCrawlerTaskDispatcher;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
                 .level(0)
                 .build();
 
-        rqueueMessageSender.enqueueIn(webCrawlerTasksQueue, webCrawlerTask, saved.getPolitenessDelayMillis());
+        webCrawlerTaskDispatcher.dispatch(webCrawlerTask, saved.getPolitenessDelayMillis());
 
         return saved;
     }
