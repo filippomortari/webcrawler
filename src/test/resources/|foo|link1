@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>My First Heading</h1>
+<p>My first paragraph.</p>
+<a href="/foo/bar/link4">a link</a>
+<a href="/foo/bar/link5">a link</a>
+<a href="/foo/bar/link6">a link</a>
+
+</body>
+</html>

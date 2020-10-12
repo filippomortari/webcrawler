@@ -12,7 +12,7 @@ openjdk version "11.0.3" 2019-04-16 LTS
 OpenJDK Runtime Environment Zulu11.31+11-CA (build 11.0.3+7-LTS)
 OpenJDK 64-Bit Server VM Zulu11.31+11-CA (build 11.0.3+7-LTS, mixed mode)
 ```
-- build the fat jar (this will also run the test suite).
+- build the fat jar (this will also run the test suite - if you run Docker Desktop on Mac `v2.4.0` and this command fails, please refer to https://github.com/testcontainers/testcontainers-java/issues/3291)
 ```
 ./gradlew clean build
 ```
