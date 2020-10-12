@@ -36,6 +36,8 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'com.github.tomakehurst:wiremock-jre8:2.27.2'
+
 }
 
 dependencyManagement {

@@ -40,7 +40,7 @@ public class UrlVisitorImpl implements UrlVisitor {
                 .collect(Collectors.toSet());
     }
 
-    public String trimQueryString(String url) {
+    private String trimQueryString(String url) {
             if (url == null) return null;
             String r = url.split("\\?")[0].split("#")[0];
             if (r.endsWith("/")) {
@@ -49,7 +49,7 @@ public class UrlVisitorImpl implements UrlVisitor {
             return r;
     }
 
-    public URI toURI(String url) {
+    private URI toURI(String url) {
         try {
             return UriComponentsBuilder.fromHttpUrl(url).build().toUri();
         } catch (Exception e) {
