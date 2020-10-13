@@ -13,7 +13,7 @@ public class WebCrawlerTaskDispatcherImpl implements WebCrawlerTaskDispatcher {
     private final String webCrawlerTasksQueue;
 
     public WebCrawlerTaskDispatcherImpl(
-            RqueueMessageSender rqueueMessageSender,
+            final RqueueMessageSender rqueueMessageSender,
             @Value("${webcrawler-tasks.queue.name}") final String webCrawlerTasksQueue
     ) {
         this.rqueueMessageSender = rqueueMessageSender;

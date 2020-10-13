@@ -11,7 +11,6 @@ import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
