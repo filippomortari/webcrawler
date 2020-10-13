@@ -1,9 +1,12 @@
-package com.filippomortari.webcrawler.integration;
+package com.filippomortari.webcrawler.integration.support;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,6 +19,20 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public abstract class AbstractIT {
+    @BeforeAll
+    static void setUp() {
+        WireMockSupport.bootstrapServer();
+    }
+
+    @AfterEach
+    void tearDownEach() {
+        WireMockSupport.reset();
+    }
+
+    @AfterAll
+    static void tearDown() {
+        WireMockSupport.stopServer();
+    }
 
     @Container
     static GenericContainer redisContainer = new GenericContainer("redis:6.0.8").withExposedPorts(6379);

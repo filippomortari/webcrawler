@@ -86,7 +86,8 @@ public class WebCrawlerTaskWorkerImpl implements WebCrawlerTaskWorker {
                                 .level(currentLevel + 1)
                                 .build();
 
-                        webCrawlerTaskDispatcher.dispatch(newTask, webCrawlerJobExecution.getPolitenessDelayMillis());
+                        final Long politenessDelayMs = Optional.ofNullable(webCrawlerJobExecution.getPolitenessDelayMillis()).orElse(0L);
+                        webCrawlerTaskDispatcher.dispatch(newTask, politenessDelayMs);
                     });
 
 
