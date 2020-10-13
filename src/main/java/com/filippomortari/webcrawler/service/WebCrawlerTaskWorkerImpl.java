@@ -44,7 +44,6 @@ public class WebCrawlerTaskWorkerImpl implements WebCrawlerTaskWorker {
         log.debug("Received task {}", webCrawlerTask);
 
         final UUID webCrawlerJobId = webCrawlerTask.getWebCrawlerJob();
-
         final Optional<WebCrawlerJobExecution> webCrawlerJobExecutionOptional = webCrawlerJobExecutionRepository.findById(webCrawlerJobId);
 
         if (webCrawlerJobExecutionOptional.isPresent()) {
