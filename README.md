@@ -37,7 +37,7 @@ An example request would look like this:
   http://localhost:8080/crawler/jobs \
   -H 'content-type: application/json' \
   -d '{
-        "frontier": "https://monzo.com/",
+        "frontier": "https://example.com/",
         "politenessDelayMillis": 500,
         "maxDepthOfCrawling": 2
 }'
