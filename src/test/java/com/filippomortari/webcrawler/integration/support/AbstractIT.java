@@ -34,7 +34,7 @@ public abstract class AbstractIT {
     }
 
     @Container
-    static GenericContainer redisContainer = new GenericContainer("redis:6.0.8").withExposedPorts(6379);
+    static GenericContainer redisContainer = new GenericContainer("redis:6.0.9").withExposedPorts(6379);
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry r) {

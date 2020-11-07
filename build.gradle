@@ -6,8 +6,11 @@ plugins {
 
 group = 'com.filippomortari'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-targetCompatibility = '11'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
+}
 
 configurations {
 	compileOnly {
@@ -50,4 +53,10 @@ dependencyManagement {
 
 test {
 	useJUnitPlatform()
+}
+
+bootJar {
+	layered {
+		includeLayerTools = true
+	}
 }
